@@ -1,151 +1,143 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Dynamic Loader With Stable AdBlock Detection</title>
+  <meta charset="UTF-8">
+  <title>Dynamic Iframe Loader</title>
 
   <style>
-    body { font-family: Arial; background: #f0f0f0; text-align: center; padding: 20px; }
-    iframe { width: 100%; height: 80vh; border: none; display: none; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      padding: 20px;
+      text-align: center;
+    }
 
+    iframe {
+      width: 100%;
+      height: 80vh;
+      border: none;
+      display: none;
+    }
+
+    /* Loading animation */
     .loader {
       margin: 40px auto;
-      width: 60px; height: 60px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
       background: #3498db;
       animation: pulse 1s infinite ease-in-out;
     }
+
     @keyframes pulse {
       0% { transform: scale(0.8); opacity: 0.6; }
       50% { transform: scale(1); opacity: 1; }
       100% { transform: scale(0.8); opacity: 0.6; }
     }
 
+    /* Adblock message */
     #adblock-warning {
       display: none;
-      background: #c62828;
-      color: #fff;
       padding: 20px;
-      border-radius: 8px;
-      font-size: 22px;
-      margin-top: 20px;
+      border-radius: 10px;
+      background: #ff4444;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
-<h2 id="status">Checking…</h2>
+<h2 id="status">Loading content…</h2>
+
 <div id="loader" class="loader"></div>
-<div id="adblock-warning">⚠️ AdBlock Detected! Please disable and refresh.</div>
+
+<div id="adblock-warning">
+  ⚠️ AdBlock detected!<br>
+  Please disable your AdBlocker and refresh the page.
+</div>
+
 <iframe id="viewer"></iframe>
 
 <script>
-/* ----------------------------------------------------------
-   LAYER 1 — Element bait (perfect accuracy)
----------------------------------------------------------- */
-function baitElementCheck() {
+// -----------------
+// Accurate AdBlock Detector
+// -----------------
+function detectAdBlock() {
   return new Promise(resolve => {
-    const bait = document.createElement("div");
-    bait.className = "adsbox ad-banner ad-container ad-slot";
+    let bait = document.createElement("div");
+    bait.className = "adsbox ad-banner ad-banner-top ad-container";
     bait.style.position = "absolute";
     bait.style.left = "-9999px";
     document.body.appendChild(bait);
 
     setTimeout(() => {
-      const blocked =
+      const blocked = (
         bait.offsetHeight === 0 ||
         bait.offsetParent === null ||
-        getComputedStyle(bait).display === "none";
+        window.getComputedStyle(bait).display === "none"
+      );
 
       bait.remove();
       resolve(blocked);
-    }, 100);
+    }, 300);
   });
 }
 
-/* ----------------------------------------------------------
-   LAYER 2 — CSS bait check
----------------------------------------------------------- */
-function cssBaitCheck() {
-  return new Promise(resolve => {
-    const bait = document.createElement("div");
-    bait.className = "adsbox";
-    bait.style.height = "20px";
-    document.body.appendChild(bait);
-
-    setTimeout(() => {
-      const blocked = bait.offsetHeight === 0;
-      bait.remove();
-      resolve(blocked);
-    }, 100);
-  });
-}
-
-/* ----------------------------------------------------------
-   LAYER 3 — Local fake ad script test (no CORS, NO false detect)
----------------------------------------------------------- */
-function scriptBaitCheck() {
-  return new Promise(resolve => {
-    const script = document.createElement("script");
-    script.src = "./ads.js";   // fake local ad script
-    script.onload  = () => resolve(false); // loaded (no blocker)
-    script.onerror = () => resolve(true);  // blocked (adblocker)
-    document.body.appendChild(script);
-  });
-}
-
-/* ----------------------------------------------------------
-   MASTER DETECTOR
----------------------------------------------------------- */
-async function detectAdBlock() {
-  const checks = await Promise.all([
-    baitElementCheck(),
-    cssBaitCheck(),
-    scriptBaitCheck()
-  ]);
-
-  return checks.includes(true);
-}
-
-/* ----------------------------------------------------------
-   MAIN LOGIC
----------------------------------------------------------- */
+// -----------------
+// Start detection
+// -----------------
 detectAdBlock().then(isBlocked => {
 
   if (isBlocked) {
     document.getElementById("loader").style.display = "none";
     document.getElementById("status").innerText = "AdBlock Detected!";
     document.getElementById("adblock-warning").style.display = "block";
-    return;
+    return; // STOP EVERYTHING
   }
 
-  startLoader();
+  // If OK → continue loading url
+  startLoadingProcess();
 });
 
-/* ----------------------------------------------------------
-   LOAD URL FROM links.txt IF NO ADBLOCK
----------------------------------------------------------- */
-function startLoader() {
+
+// -----------------
+// Main loader function
+// -----------------
+function startLoadingProcess() {
   const params = new URLSearchParams(window.location.search);
   const id = params.get("id");
 
   if (!id) {
-    document.getElementById("status").innerText = "No ID in URL.";
+    document.getElementById("status").innerText = "Error: No ID provided in URL.";
     return;
   }
 
+  loadURLFromText(id);
+}
+
+
+// -----------------
+// Load URL from TXT
+// -----------------
+function loadURLFromText(id) {
   fetch("links.txt")
-    .then(r => r.text())
+    .then(response => response.text())
     .then(text => {
       const lines = text.split("\n");
-      let url = null;
+      let foundURL = null;
 
-      lines.forEach(line => {
-        if (line.startsWith(id + "=")) url = line.split("=")[1].trim();
-      });
+      for (let line of lines) {
+        line = line.trim();
+        if (line.startsWith(id + "=")) {
+          foundURL = line.split("=")[1].trim();
+          break;
+        }
+      }
 
-      if (!url) {
-        document.getElementById("status").innerText = "ID not found.";
+      if (!foundURL) {
+        document.getElementById("status").innerText = "No URL found for ID: " + id;
         document.getElementById("loader").style.display = "none";
         return;
       }
@@ -158,7 +150,11 @@ function startLoader() {
         document.getElementById("status").innerText = "Loaded:";
       };
 
-      iframe.src = url;
+      iframe.src = foundURL;
+    })
+    .catch(err => {
+      document.getElementById("status").innerText = "Error: " + err;
+      document.getElementById("loader").style.display = "none";
     });
 }
 </script>
