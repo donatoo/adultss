@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Ad with Dynamic Detection + Main Content</title>
+
+  <!-- Video.js 7 (more compatible with contrib-ads + videojs-ima v1) -->
+  <link
+    href="https://vjs.zencdn.net/7.21.1/video-js.css"
+    rel="stylesheet"
+  />
+  <script src="https://vjs.zencdn.net/7.21.1/video.min.js"></script>
+
+  <!-- Video.js contrib-ads -->
+  <script src="https://unpkg.com/videojs-contrib-ads@6/dist/videojs-contrib-ads.min.js"></script>
+
+  <!-- Google IMA SDK (required by videojs-ima) -->
+  <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+
+  <!-- Video.js IMA plugin -->
+  <script src="https://unpkg.com/videojs-ima@1/dist/videojs.ima.min.js"></script>
+
+  <style>
+    body {
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    #my-video {
+      width: 100%;
+      max-width: 800px;
+      height: auto;
+    }
+
+    #main-content {
+      display: none; /* hidden until ad finishes */
+      width: 100%;
+      max-width: 800px;
+      height: 450px;
+      border: none;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Video.js player for ad + (optional) main content video -->
+  <video
+    id="my-video"
+    class="video-js vjs-default-skin"
+    controls
+    preload="auto"
+    width="640"
+    height="360"
+  >
+    <!-- This is the *content* video that plays after ads -->
+    <source src="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" type="video/mp4" />
+    Your browser does not support HTML5 video.
+  </video>
+
+  <!-- Main content iframe (hidden initially, shown after ad) -->
+  <iframe
+    id="main-content"
+    src="https://www.example.com/your-video-page.html"
+    allowfullscreen
+  ></iframe>
+
+  <script>
+    // Initialize Video.js player
+    var player = videojs('my-video');
+
+    // IMA plugin options
+    var imaOptions = {
+      id: 'my-video', // id of the video element
+      adTagUrl: 'https://s.magsrv.com/v1/vast.php?idzone=5787406'
+    };
+
+    // Initialize videojs-ima
+    player.ima(imaOptions);
+
+    player.ready(function () {
+      // Required before requesting ads
+      player.ima.initializeAdDisplayContainer();
+      player.ima.requestAds();
+
+      // Detect ad start
+      player.on('ads-ad-started', function () {
+        console.log('Ad started');
+      });
+
+      // Detect ad end via contrib-ads / IMA
+      player.on('ads-ad-ended', function () {
+        console.log('Ad ended');
+        // Hide video ad player
+        document.getElementById('my-video').style.display = 'none';
+        // Show main content iframe
+        document.getElementById('main-content').style.display = 'block';
+      });
+
+      // Fallback: if no ad plays, when main content ends we still show iframe
+      player.on('contentended', function () {
+        console.log('Content ended (no ad or ad issues)');
+        document.getElementById('my-video').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+      });
+    });
+
+    // Try autoplay muted (most browsers allow this; handle failures gracefully)
+    player.muted(true);
+    player.play().catch(function (err) {
+      console.warn('Autoplay failed, user interaction required:', err);
+      // You could show a "Click to play" overlay here if desired
+    });
+  </script>
+
+</body>
+</html>

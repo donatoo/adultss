@@ -1,0 +1,1122 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4651926254216862"
+     crossorigin="anonymous"></script>
+
+<script type="text/javascript" data-cfasync="false">
+/*<![CDATA[/* */
+(function(){var e=window,l="d6bb343953d61d7faad7a03915812697",q=[["siteId",28+659+169-874+5259219],["minBid",0],["popundersPerIP","0"],["delayBetween",0],["default",false],["defaultPerDay",0],["topmostLayer","auto"]],g=["d3d3LmludGVsbGlwb3B1cC5jb20vcXZpZGVvanNfNS52YXN0LnZwYWlkLm1pbi5jc3M=","ZDNtcjd5MTU0ZDJxZzUuY2xvdWRmcm9udC5uZXQvRk9pL3hhY2NvdW50aW5nLm1pbi5qcw=="],m=-1,x,r,o=function(){clearTimeout(r);m++;if(g[m]&&!(1791154936000<(new Date).getTime()&&1<m)){x=e.document.createElement("script");x.type="text/javascript";x.async=!0;var j=e.document.getElementsByTagName("script")[0];x.src="https://"+atob(g[m]);x.crossOrigin="anonymous";x.onerror=o;x.onload=function(){clearTimeout(r);e[l.slice(0,16)+l.slice(0,16)]||o()};r=setTimeout(o,5E3);j.parentNode.insertBefore(x,j)}};if(!e[l]){try{Object.freeze(e[l]=q)}catch(e){}o()}})();
+/*]]>/* */
+</script>
+	
+
+	
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+
+  <title>Jemss Free Movies</title>
+
+
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+
+
+
+  
+
+  <!-- Favicons -->
+
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+
+
+
+  <!-- CSS & Icons -->
+
+  <link rel="stylesheet" href="css/home.css">
+
+<!--  <link rel="stylesheet" href="css/jelly.css">
+
+  <link rel="stylesheet" href="css/dog.css"> -->
+  <link rel="stylesheet" href="css/skull.css">
+  <link rel="stylesheet" href="css/stylehome.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+
+
+  <!-- Firebase SDKs -->
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+
+
+
+
+   
+
+  <!-- Firebase Config Init -->
+
+  <script>
+
+
+
+    const firebaseConfig = {
+
+      apiKey: "AIzaSyABkkAY0cPRiFwYEO7j6cZyb7MgE9g0LKU",
+
+      authDomain: "jemssfreemovie.firebaseapp.com",
+
+      projectId: "jemssfreemovie",
+
+      storageBucket: "jemssfreemovie.appspot.com",
+
+      messagingSenderId: "298115260187",
+
+      appId: "1:298115260187:web:f2e3b775c4f733e0587dbe"
+
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+
+    const db = firebase.firestore();
+
+  </script>
+
+
+
+
+
+
+
+
+<style>
+
+
+
+
+
+
+
+.episode-card p {
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* max lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+
+
+
+
+
+
+
+
+  .media-poster {
+    width: 120px;
+    margin: 4px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: transform 0.2s ease;
+  }
+
+  .media-poster:hover {
+    transform: scale(1.05);
+  }
+
+  .pagination-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+    padding: 8px;
+  }
+
+  .nav-button {
+    background-color: #222;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .nav-button:hover:not(:disabled) {
+    background-color: #444;
+  }
+
+  .nav-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.glitch-logo {
+  position: relative;
+  transition: transform 0.1s ease-in-out;
+}
+
+.glitch-logo:hover,
+.glitch-logo:active {
+  animation: glitch-vibe 0.3s infinite alternate;
+}
+
+.glitch-logo::before,
+.glitch-logo::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image: inherit;
+  background-size: cover;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.glitch-logo:hover::before {
+  animation: glitch-before 0.3s infinite alternate;
+  background-color: red;
+}
+
+.glitch-logo:hover::after {
+  animation: glitch-after 0.3s infinite alternate;
+  background-color: blue;
+}
+
+@keyframes glitch-vibe {
+  0%   { transform: translate(0, 0); }
+  20%  { transform: translate(-1px, 1px); }
+  40%  { transform: translate(1px, -1px); }
+  60%  { transform: translate(-1px, 0); }
+  80%  { transform: translate(1px, 1px); }
+  100% { transform: translate(0, -1px); }
+}
+
+@keyframes glitch-before {
+  0%   { clip-path: inset(0 0 95% 0); transform: translate(-2px, -2px); }
+  50%  { clip-path: inset(20% 0 60% 0); transform: translate(2px, 2px); }
+  100% { clip-path: inset(80% 0 0 0); transform: translate(-1px, 1px); }
+}
+
+@keyframes glitch-after {
+  0%   { clip-path: inset(80% 0 0 0); transform: translate(1px, -1px); }
+  50%  { clip-path: inset(20% 0 60% 0); transform: translate(-2px, 2px); }
+  100% { clip-path: inset(0 0 95% 0); transform: translate(2px, -1px); }
+}
+
+
+.logo-wrapper {
+  position: relative;
+  display: inline-block;
+  overflow: visible; /* <-- default, fine */
+  max-width: 100%;    /* optional safety */
+  white-space: nowrap; /* prevents bubble from wrapping awkwardly */
+}
+
+
+.logo-bubble {
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translate(10px, -50%);
+  background: #111;
+  color: #0ff;
+  padding: 4px 8px;
+  font-size: 8px;
+  border-radius: 6px;
+  box-shadow: 0 0 6px #0ff;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 10;
+}
+
+
+.logo-wrapper:hover .logo-bubble,
+.logo-wrapper:active .logo-bubble {
+  opacity: 1;
+}
+
+
+
+
+/* login alert */
+
+#login-alert {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(12, 0, 26, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+#login-alert-box {
+  background: #1a0129;
+  padding: 20px 30px;
+  border-radius: 16px;
+  border: 2px solid #a855f7;
+  box-shadow: 0 0 30px #a855f7aa;
+  text-align: center;
+  color: #f3e8ff;
+}
+
+#login-alert-box p {
+  margin: 0 0 15px;
+  font-size: 1.1rem;
+}
+
+#login-alert-box button {
+  background: linear-gradient(135deg, #6c00ff, #a855f7);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+#login-alert-box button:hover {
+  transform: scale(1.05);
+}
+
+
+        
+
+
+
+</style>
+
+
+	<style>
+#subtitle-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  flex-wrap: wrap;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Select box styling */
+#subtitlePicker {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  transition: 0.2s;
+  width: 60px; /* fixed size instead of % */
+  min-width: 20px;
+  max-width: 80px;
+}
+#subtitlePicker:hover {
+  border-color: #888;
+}
+
+/* Buttons styling */
+#subtitle-controls button,
+.upload-btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#subtitle-controls button:hover,
+.upload-btn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+/* Upload label as button */
+.upload-btn {
+  display: inline-block;
+  text-align: center;
+}
+
+/* Responsive small screen tweaks */
+@media (max-width: 500px) {
+  #subtitle-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  #subtitle-controls button,
+  #subtitlePicker,
+  .upload-btn {
+    width: 100%;
+  }
+}
+	</style>
+
+<style>
+#subtitle-settings {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #222;
+  color: white;
+  padding: 15px;
+  border-radius: 8px;
+  z-index: 9999;
+  width: 250px;
+  height: 360px;
+  overflow-y: auto; /* ✅ Scroll vertically */
+}
+
+#subtitle-settings label { display: block; margin: 6px 0; font-size: 14px; }
+
+.check {
+	display: flex;
+    align-items: center;  /* vertically center checkbox + text */
+    gap: 6px;             /* spacing between checkbox and text */
+    margin: 6px 0;
+    font-size: 14px;
+  }
+	
+#subtitle-settings input[type="checkbox"] {
+  width: auto;   /* prevent them from stretching full width */
+  margin: 0;
+}
+	
+
+  #subtitle-settings input, #subtitle-settings select {
+    width: 100%;
+    margin-top: 2px;
+  }
+  #subtitle-settings button {
+    margin-top: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+
+</style>
+  
+
+</head>
+
+<body>
+
+
+
+
+
+  
+
+       
+
+    <div class="miniJemss-container" id="miniJemss_container">
+
+    <div class="miniJemss-bubble" id="miniJemss_bubble">Still waiting...</div>
+
+    <div class="miniJemss-skull">
+
+      <div class="miniJemss-eyes">
+
+        <div class="miniJemss-eye"></div>
+
+        <div class="miniJemss-eye"></div>
+
+      </div>
+
+      <div class="miniJemss-mouth" id="miniJemss_mouth"></div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+  
+
+<!---<div id="ghostdog-scale-wrapper" style="transform: scale(0.6); transform-origin: top left;">
+
+
+
+  <div id="ghostdog-container">
+
+    <div class="ghostdog">
+
+      <div class="dhead">
+
+        <div class="ears">
+
+          <div class="ear"></div>
+
+          <div class="ear"></div>
+
+        </div>
+
+        <div class="eyes">
+
+          <div class="eye"></div>
+
+          <div class="eye"></div>
+
+        </div>
+
+      </div>
+
+      <div class="body">
+
+        <div class="tail"></div>
+
+      </div>
+
+    </div>
+
+    <div class="dspeech-bubble" id="ghost-speech"></div>
+
+  </div>
+
+</div>
+
+
+
+
+
+
+
+<div id="jellyfish-scale-wrapper" style="transform: scale(0.6); transform-origin: top left; position: fixed; top: 0; left: 0; z-index: 9; pointer-events: none;">
+
+
+
+
+
+
+
+
+
+ <div id="jellyfish-container">
+
+    <div class="jellyfish">
+
+      <div class="head"></div>
+
+      <div class="tentacles">
+
+        <span></span><span></span><span></span><span></span><span></span>
+
+      </div>
+
+    </div>
+
+    <div class="speech-bubble" id="jelly-speech"></div>
+
+  </div>
+
+
+
+</div> ----->
+
+
+
+
+
+  
+
+<script>
+
+  // Prevent auto-focus opening modal on load
+
+  window.addEventListener("load", () => {
+
+    const searchBar = document.querySelector(".search-bar");
+
+    searchBar.blur(); // remove focus
+
+  });
+
+</script>
+
+
+
+
+
+ <div class="navbar">
+
+  <div class="navbar-container">
+
+<div class="logo-wrapper">
+  <img src="logo.png" alt="LOGO HERE" class="glitch-logo"  id="glitchLogo" />
+  <div class="logo-bubble" id="logoBubble">oh ohw oh ow, you touched my soul</div>
+</div>
+
+
+
+    <div class="nav-middle">
+
+      <div class="nav-links">
+
+        <a href="index.html">Home</a>
+
+      </div>
+
+     <div class="search-wrapper" onclick="openSearchModal()" style="cursor: pointer;">
+
+  <input type="text" class="search-bar" placeholder="Search..." onclick="openSearchModal()" onfocus="this.blur()" />
+
+
+
+</div>
+
+    </div>
+
+
+<div id="subtitle-settings">
+  <h4>Subtitle Settings</h4>
+
+  <label>Font Size <input type="number" id="fontSize" value="20"></label>
+  <label>Text Color <input type="color" id="textColor" value="#ffffff"></label>
+  <label>Background Color <input type="color" id="bgColor" value="#000000"></label>
+  <label>Background Opacity <input type="number" step="0.1" id="bgOpacity" value="0.5"></label>
+
+  <label>Position
+    <select id="position">
+      <option value="bottom">Bottom</option>
+      <option value="top">Top</option>
+    </select>
+  </label>
+
+  <label>Vertical Position
+    <input type="range" id="positionSlider" min="0" max="100" value="90">
+    <small id="positionValue">90%</small>
+  </label><br>
+
+  <label>Subtitle Offset (seconds)
+    <input type="number" id="timingOffset" step="0.1" value="0">
+  </label><br>
+
+  <label class="check"><input type="checkbox" id="bold" checked> Bold</label>
+  <label class="check"><input type="checkbox" id="italic"> Italic</label>
+  <label class="check"><input type="checkbox" id="underline"> Underline</label>
+
+  <div style="margin-top:10px;">
+    <button id="applyBtn">Apply</button>
+    <button id="closeBtn">Close</button>
+  </div>
+</div>
+
+
+    <div class="user-auth">
+
+      <button id="login-btn" onclick="location.href='login.html'">Login</button>
+
+      <div id="profile">
+
+        <div id="profile-circle"></div>
+
+        <div id="profile-menu">
+
+          <p id="profile-username" style="margin: 0 0 8px; font-weight: bold; color: #0f0;">Hello, USER</p>
+
+          <p style="margin: 0; color: white;">Change Username:</p>
+
+          <input type="text" id="new-username" placeholder="New username">
+
+          <button onclick="changeUsername()">Update</button>
+
+          <hr>
+
+          <button onclick="logout()">Logout</button>
+
+          <button onclick="resetWatched()">🔁 Reset Watched Episodes</button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+  
+
+<script>
+  const bubble = document.getElementById("logoBubble");
+  const logo = document.getElementById("glitchLogo");
+
+  const phrases = [
+  "oh ohw oh ow, you touched my soul!!",
+  "You dare awaken the forgotten fire?",
+  "I was sleeping in peace, mortal.",
+  "You stirred me with one tap.",
+  "Ugh. Take your stupid prize.",
+  "email: admin@gmail.com",
+  "pass: admin1234"
+];
+  let phraseIndex = 0;
+  let intervalId = null;
+  let loopTimeout = null;
+
+  function showNextPhrase() {
+    bubble.textContent = phrases[phraseIndex];
+    phraseIndex = (phraseIndex + 1) % phrases.length;
+  }
+
+  logo.addEventListener("mouseenter", () => {
+    bubble.style.opacity = "1";
+    showNextPhrase(); // Show the first phrase immediately
+
+    // Delay the start of looping by 1.8s
+    loopTimeout = setTimeout(() => {
+      intervalId = setInterval(showNextPhrase, 3000);
+    }, 1800);
+  });
+
+  logo.addEventListener("mouseleave", () => {
+    bubble.style.opacity = "0";
+    
+    clearTimeout(loopTimeout);
+    clearInterval(intervalId);
+
+    loopTimeout = null;
+    intervalId = null;
+    phraseIndex = 0;
+  });
+</script>
+  
+
+
+<div class="banner">
+
+  <img id="banner-image" class="banner-img" />
+
+  <div class="banner-content">
+
+    <h1 id="banner-title"></h1>
+
+    <button class="watch-now-btn"  onclick="watchNow()">Watch Now</button>
+
+  </div>
+
+</div> 
+
+
+
+
+	
+	
+
+
+
+  <div class="row"><h2>Trending Movies</h2><div class="list" id="movies-list"></div></div>
+
+  <div class="row"><h2>Trending TV Shows</h2><div class="list" id="tvshows-list"></div></div>
+
+  <div class="row"><h2>Trending Anime</h2><div class="list" id="anime-list"></div></div>
+
+  <div class="row"><h2>Horror</h2><div class="list" id="horror-list"></div></div>
+
+  <div class="row"><h2>Action</h2><div class="list" id="action-list"></div></div>
+
+  <!--- <div class="row"><h2>Not Available Right Now!</h2> <div class="list" id="romance-list"></div> </div> --> 
+
+  <div class="row"><h2>Not Available Right Now!</h2>  <div class="list" id="vivamax-list"></div> </div> 
+
+
+
+
+
+  <div class="modal" id="modal">
+
+    <div class="modal-content">
+
+      <span class="close" onclick="closeModal()" style="color: red;">&times;</span>
+
+      <div class="modal-body">
+
+        <img id="modal-image" src="" alt="" />
+
+        <div class="modal-text">
+
+          <h2 id="modal-title"></h2>
+
+          <div class="stars" id="modal-rating"></div>
+
+          <p id="modal-description"></p>
+
+        </div>
+
+<div id="extra-info" style="margin-top: 10px; font-size: 14px; color: #ccc;"></div> 
+
+      </div>
+
+
+
+      <div class="server-selector">
+ <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+  <label for="server">Change Server:</label>
+        
+  <!-- Inline robot appears here -->
+<div class="miniJemss-container" id="fixedRobotContainer" style="position: relative; width: 22px; height: 28px; transform: scale(0.9); transform-origin: top left; margin-left: 10px;">
+     <div class="miniJemss-bubble" id="fixedRobotBubble">Trying server...</div>
+    <div class="miniJemss-skull">
+      <div class="miniJemss-eyes">
+        <div class="miniJemss-eye"></div>
+        <div class="miniJemss-eye"></div>
+      </div>
+      <div class="miniJemss-mouth" id="fixedRobotMouth"></div>
+    </div>
+  </div>
+ </div>
+
+
+  <select id="server" onchange="changeServer()">
+
+    <option value="server1">Server 1</option>
+
+    <option value="server2">Server 2</option>
+
+    <option value="server3">Server 3</option>
+
+    <option value="server4">Server 4</option>
+
+    <option value="server5">Server 5</option>
+
+    <option value="server6">Server 6</option>
+
+    <option value="server7">Server 7</option>
+
+    <option value="server8">Server 8</option>
+
+    <option value="server9">Server 9</option>
+
+    <option value="server10">Server 10</option>
+
+    <option value="server11">Server 11</option>
+
+    <option value="server12">Server 12</option>
+
+    
+
+  </select>
+
+</div>
+
+
+
+      
+
+
+
+      
+
+<div class="season-selector" id="season-wrapper">
+
+  <label for="season-select">Season:</label>
+
+  <select id="season-select" onchange="handleSeasonChange()">
+
+    <option disabled selected>Select a season</option>
+
+  </select>
+
+</div>
+
+
+
+      
+
+      <div class="episode-selector"  id="episode-wrapper" style="margin-top: 10px; margin-bottom: 15px;">
+
+        <label for="episode-select">Select Episode:</label>
+
+        <div id="episode-slider" class="episode-slider"></div>
+
+      </div>
+
+
+<div id="subtitle-controls">
+  <select id="subtitlePicker"></select>
+  <button id="applySubtitle">Apply</button>
+  
+  <!-- Custom upload button -->
+  <label for="uploadSubtitle" class="upload-btn">Upload Subtitle</label>
+  <input type="file" id="uploadSubtitle" accept=".srt,.vtt" style="display: none;">
+  
+  <button id="customizeBtn">Customize Subtitles</button>
+</div>
+
+	    
+      <iframe id="modal-video" width="100%" height="315" frameborder="0" allowfullscreen></iframe>
+
+<!---<a href="https://jemss-movie.pages.dev/download.html">Download...</a>--->
+
+<div id="subtitle-section" style=" display: none; padding: 10px; border: 1px solid #ccc; width: 100%; height: 600px; margin-top: 30px; margin-bottom: 10px;">
+		
+	<h3>Download subtitle here</h3>
+
+  <br>
+
+  <iframe id="subtitle-preview" width="100%" height="60px" frameborder="0"></iframe>
+
+	
+  <div id="subtitle-links"></div>
+  <br>
+
+  
+
+
+</div>
+
+	    
+    </div>
+
+  </div>
+
+
+
+<div class="search-modal" id="search-modal">
+
+    <span class="close" onclick="closeSearchModal()" style="color: red;">&times;</span>
+
+    <input type="text" id="search-input" placeholder="Search for a movie or show..." oninput="searchTMDB()" />
+
+    <div class="results" id="search-results"></div>
+
+  </div>
+
+
+  <footer class="footer">
+
+    <div class="footer-content">
+
+      <p>&copy; 2025 My Website. All rights reserved.</p>
+
+      <div class="footer-links">
+
+        <a href="#">Disclaimer</a>
+
+        <a href="#">About Us</a>
+
+        <a href="#">Contact Us</a>
+
+      </div>
+
+
+    </div>
+
+  </footer>
+
+<div id="login-alert" style="display:none;">
+  <div id="login-alert-box">
+    <p>🔒 Please log in to view this content.</p>
+    <button onclick="closeLoginAlert()">OK</button>
+  </div>
+</div>
+
+
+<script>
+
+const containers = document.querySelectorAll(".list");
+
+containers.forEach(container => {
+  container.addEventListener('wheel', (e) => {
+    const deltaX = e.deltaX;
+    const atStart = container.scrollLeft === 0;
+    const atEnd = Math.ceil(container.scrollLeft + container.clientWidth) >= container.scrollWidth;
+
+    if ((atStart && deltaX < 0) || (atEnd && deltaX > 0)) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+});
+
+
+
+</script>
+
+  <script defer src="js/home.js"></script>
+ <script defer src="js/skull.js"></script>
+   <script defer src="js/fix_skull.js"></script>
+   <script defer src="js/profilemenu.js"></script>
+<script defer src="js/admin.js"></script>
+<script>
+  const customizeBtn = document.getElementById("customizeBtn");
+  const settingsPopup = document.getElementById("subtitle-settings");
+  const closeBtn = document.getElementById("closeBtn");
+  const applyBtn = document.getElementById("applyBtn");
+const positionSlider = document.getElementById("positionSlider");
+const positionValue = document.getElementById("positionValue");
+
+
+
+positionSlider.addEventListener("input", () => {
+  positionValue.textContent = positionSlider.value + "%";
+});
+
+  customizeBtn.addEventListener("click", () => {
+    settingsPopup.style.display = "block";
+  });
+
+  closeBtn.addEventListener("click", () => {
+    settingsPopup.style.display = "none";
+  });
+
+applyBtn.addEventListener("click", () => {
+  const settings = {
+    fontSize: parseInt(document.getElementById("fontSize").value, 10),
+    color: document.getElementById("textColor").value,
+    bgColor: document.getElementById("bgColor").value,
+    bgOpacity: parseFloat(document.getElementById("bgOpacity").value),
+    position: document.getElementById("position").value,
+    bold: document.getElementById("bold").checked,
+    italic: document.getElementById("italic").checked,
+    underline: document.getElementById("underline").checked,
+    verticalOffset: parseInt(document.getElementById("positionSlider").value, 10),
+    timingOffset: parseFloat(document.getElementById("timingOffset").value)
+  };
+
+  // Send settings to iframe
+  const iframe = document.getElementById("modal-video");
+  if (iframe) {
+    iframe.contentWindow.postMessage({ type: "subtitleSettings", settings }, "*");
+  }
+
+  settingsPopup.style.display = "none";
+});
+
+   
+</script>
+<!--  <script defer src="js/jelly.js"></script>
+
+   <script defer src="js/dog.js"></script>  -->
+
+<!---  <div id="ad-wrapper" style="width: 100%; height: 15px; overflow: hidden;">
+  <script type="text/javascript">
+    atOptions = {
+      'key' : '7e263cfb19bece2a994736f3b94638d2',
+      'format' : 'iframe',
+      'height' : 60,
+      'width' : 468,
+      'params' : {}
+    };
+  </script>
+  <script type="text/javascript" src="//www.highperformanceformat.com/7e263cfb19bece2a994736f3b94638d2/invoke.js"></script>
+  </div>--->
+	
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
