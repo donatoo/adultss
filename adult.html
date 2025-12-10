@@ -1,162 +1,136 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Dynamic Iframe Loader</title>
+<meta charset="UTF-8">
+<title>Video Loader with Accurate Adblock Detection</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f8f8f8;
-      padding: 20px;
-      text-align: center;
-    }
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: white;
+    margin: 0;
+    padding: 0;
+}
 
-    iframe {
-      width: 100%;
-      height: 80vh;
-      border: none;
-      display: none;
-    }
+#loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 25px;
+}
 
-    /* Loading animation */
-    .loader {
-      margin: 40px auto;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: #3498db;
-      animation: pulse 1s infinite ease-in-out;
-    }
+#message {
+    text-align: center;
+    padding: 20px;
+    display: none;
+    color: red;
+    font-size: 22px;
+}
 
-    @keyframes pulse {
-      0% { transform: scale(0.8); opacity: 0.6; }
-      50% { transform: scale(1); opacity: 1; }
-      100% { transform: scale(0.8); opacity: 0.6; }
-    }
-
-    /* Adblock message */
-    #adblock-warning {
-      display: none;
-      padding: 20px;
-      border-radius: 10px;
-      background: #ff4444;
-      color: white;
-      font-size: 20px;
-      font-weight: bold;
-    }
-  </style>
+iframe {
+    width: 100%;
+    height: 100vh;
+    border: none;
+    display: none;
+}
+</style>
 </head>
 <body>
 
-<h2 id="status">Loading content…</h2>
+<div id="loader">⏳ Loading...</div>
+<div id="message"></div>
 
-<div id="loader" class="loader"></div>
-
-<div id="adblock-warning">
-  ⚠️ AdBlock detected!<br>
-  Please disable your AdBlocker and refresh the page.
-</div>
-
-<iframe id="viewer"></iframe>
+<iframe id="video"></iframe>
 
 <script>
-// -----------------
-// Accurate AdBlock Detector
-// -----------------
-function detectAdBlock() {
-  return new Promise(resolve => {
+// ------------------------------
+// REAL ACCURATE ADBLOCK DETECTOR
+// ------------------------------
+
+async function detectAdblock() {
     let bait = document.createElement("div");
-    bait.className = "adsbox ad-banner ad-banner-top ad-container";
+    bait.className = "ad-banner ad adsbox advertisement";
+    bait.style.height = "1px";
     bait.style.position = "absolute";
-    bait.style.left = "-9999px";
+    bait.style.top = "-1000px";
     document.body.appendChild(bait);
 
-    setTimeout(() => {
-      const blocked = (
-        bait.offsetHeight === 0 ||
-        bait.offsetParent === null ||
-        window.getComputedStyle(bait).display === "none"
-      );
+    let baitBlocked = false;
 
-      bait.remove();
-      resolve(blocked);
-    }, 300);
-  });
+    // Test 1: CSS hiding
+    if (getComputedStyle(bait).display === "none" || bait.offsetHeight === 0) {
+        baitBlocked = true;
+    }
+
+    // Test 2: Script-based blocking
+    let scriptBlocked = false;
+    try {
+        await fetch("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", {
+            method: "HEAD",
+            mode: "no-cors"
+        });
+    } catch (e) {
+        scriptBlocked = true;
+    }
+
+    // Test 3: Real ad request (this is an actual ad server URL)
+    let realAdBlocked = false;
+    try {
+        await fetch("https://securepubads.g.doubleclick.net/tag/js/gpt.js", {
+            method: "HEAD",
+            mode: "no-cors"
+        });
+    } catch (e) {
+        realAdBlocked = true;
+    }
+
+    document.body.removeChild(bait);
+
+    // Must fail ALL 3 tests before we declare true blocking
+    return (baitBlocked && scriptBlocked && realAdBlocked);
 }
 
-// -----------------
-// Start detection
-// -----------------
-detectAdBlock().then(isBlocked => {
+// ----------------------------------
+// LOAD VIDEO ONLY IF NO AD BLOCKING
+// ----------------------------------
 
-  if (isBlocked) {
-    document.getElementById("loader").style.display = "none";
-    document.getElementById("status").innerText = "AdBlock Detected!";
-    document.getElementById("adblock-warning").style.display = "block";
-    return; // STOP EVERYTHING
-  }
+async function init() {
+    let detected = await detectAdblock();
 
-  // If OK → continue loading url
-  startLoadingProcess();
-});
-
-
-// -----------------
-// Main loader function
-// -----------------
-function startLoadingProcess() {
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
-
-  if (!id) {
-    document.getElementById("status").innerText = "Error: No ID provided in URL.";
-    return;
-  }
-
-  loadURLFromText(id);
-}
-
-
-// -----------------
-// Load URL from TXT
-// -----------------
-function loadURLFromText(id) {
-  fetch("links.txt")
-    .then(response => response.text())
-    .then(text => {
-      const lines = text.split("\n");
-      let foundURL = null;
-
-      for (let line of lines) {
-        line = line.trim();
-        if (line.startsWith(id + "=")) {
-          foundURL = line.split("=")[1].trim();
-          break;
-        }
-      }
-
-      if (!foundURL) {
-        document.getElementById("status").innerText = "No URL found for ID: " + id;
+    if (detected) {
         document.getElementById("loader").style.display = "none";
+        let msg = document.getElementById("message");
+        msg.style.display = "block";
+        msg.innerHTML = "🚫 Please disable AdBlock to continue.<br>This video cannot load while AdBlock is enabled.";
         return;
-      }
+    }
 
-      const iframe = document.getElementById("viewer");
+    // If no adblock detected, continue loading the video
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
 
-      iframe.onload = () => {
-        document.getElementById("loader").style.display = "none";
-        iframe.style.display = "block";
-        document.getElementById("status").innerText = "Loaded:";
-      };
+    if (!id) {
+        document.getElementById("loader").textContent = "Error: No ID in URL";
+        return;
+    }
 
-      iframe.src = foundURL;
-    })
-    .catch(err => {
-      document.getElementById("status").innerText = "Error: " + err;
-      document.getElementById("loader").style.display = "none";
-    });
+    // Load the .txt file
+    fetch(`videos/${id}.txt`)
+        .then(r => r.text())
+        .then(url => {
+            document.getElementById("loader").style.display = "none";
+            let iframe = document.getElementById("video");
+            iframe.src = url.trim();
+            iframe.style.display = "block";
+        })
+        .catch(() => {
+            document.getElementById("loader").textContent = "Video not found.";
+        });
 }
+
+init();
 </script>
 
 </body>
