@@ -46,7 +46,7 @@
 function baitElementCheck() {
   return new Promise(resolve => {
     const bait = document.createElement("div");
-    bait.className = "ad adsbox ads-banner ad-unit ad-slot ad-container";
+    bait.className = "ad adsbox ad-banner ad-container ad-slot";
     bait.style.position = "absolute";
     bait.style.left = "-9999px";
     document.body.appendChild(bait);
@@ -64,28 +64,30 @@ function baitElementCheck() {
 }
 
 /* ------------------------------------------------------------------
-   LAYER 2 — Fake ad script loading test
+   LAYER 2 — REAL ad script test
 ------------------------------------------------------------------ */
+// This URL is ALWAYS blocked by AdBlock:
+const REAL_AD_SCRIPT = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js";
+
 function fakeScriptTest() {
   return new Promise(resolve => {
     const script = document.createElement("script");
-    script.src = "https://ads.example.com/ad.js"; // blocked by all blockers
-    script.onerror = () => resolve(true);  // blocked
-    script.onload  = () => resolve(false); // allowed
+    script.src = REAL_AD_SCRIPT;
+    script.onerror = () => resolve(true);   // Blocked
+    script.onload  = () => resolve(false);  // Allowed (rare)
     document.body.appendChild(script);
   });
 }
 
 /* ------------------------------------------------------------------
-   LAYER 3 — Fetch request to blacklisted ad URL
+   LAYER 3 — REAL ad network fetch test
 ------------------------------------------------------------------ */
+const REAL_AD_URL = "https://securepubads.g.doubleclick.net/tag/js/gpt.js";
+
 function networkTrapTest() {
-  return fetch("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", {
-      method: "HEAD",
-      mode: "no-cors"
-    })
+  return fetch(REAL_AD_URL, { method: "HEAD", mode: "no-cors" })
     .then(() => false)
-    .catch(() => true);
+    .catch(() => true);  // Blocked
 }
 
 /* ------------------------------------------------------------------
@@ -107,19 +109,21 @@ function cssRuleTest() {
 }
 
 /* ------------------------------------------------------------------
-   LAYER 5 — Invisible Iframe bait
+   LAYER 5 — REAL ad iframe test
 ------------------------------------------------------------------ */
+const REAL_AD_IFRAME = "https://googleads.g.doubleclick.net/pagead/html/r20190131/r20190131/zrt_lookup.html";
+
 function iframeTrapTest() {
   return new Promise(resolve => {
     let frame = document.createElement("iframe");
-    frame.src = "https://example.com/ads.html"; // blocked by ABP / uBlock
+    frame.src = REAL_AD_IFRAME;
     frame.style.width = "1px";
     frame.style.height = "1px";
     frame.style.position = "absolute";
     frame.style.left = "-9999px";
 
-    frame.onload = () => resolve(false);
-    frame.onerror = () => resolve(true);
+    frame.onload = () => resolve(false); // Loaded (not blocked)
+    frame.onerror = () => resolve(true); // Blocked
 
     document.body.appendChild(frame);
   });
@@ -139,7 +143,7 @@ async function detectAdBlock() {
 
   const triggers = results.filter(x => x === true).length;
 
-  // STRICT MODE: if ANY layer says blocked → treat as blocked
+  // Strict mode: ANY detection = blocked
   return triggers > 0;
 }
 
@@ -159,7 +163,7 @@ detectAdBlock().then(isBlocked => {
 });
 
 /* ------------------------------------------------------------------
-   Normal loading if no blocker
+   Normal content loading
 ------------------------------------------------------------------ */
 function startLoader() {
   const params = new URLSearchParams(window.location.search);
