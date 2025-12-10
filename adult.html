@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Dynamic Loader With Ultra AdBlock Detection</title>
+  <title>Dynamic Loader With Stable AdBlock Detection</title>
 
   <style>
     body { font-family: Arial; background: #f0f0f0; text-align: center; padding: 20px; }
@@ -40,13 +40,13 @@
 <iframe id="viewer"></iframe>
 
 <script>
-/* ------------------------------------------------------------------
-   LAYER 1 — Invisible bait element check
------------------------------------------------------------------- */
+/* ----------------------------------------------------------
+   LAYER 1 — Element bait (perfect accuracy)
+---------------------------------------------------------- */
 function baitElementCheck() {
   return new Promise(resolve => {
     const bait = document.createElement("div");
-    bait.className = "ad adsbox ad-banner ad-container ad-slot";
+    bait.className = "adsbox ad-banner ad-container ad-slot";
     bait.style.position = "absolute";
     bait.style.left = "-9999px";
     document.body.appendChild(bait);
@@ -59,112 +59,72 @@ function baitElementCheck() {
 
       bait.remove();
       resolve(blocked);
-    }, 150);
+    }, 100);
   });
 }
 
-/* ------------------------------------------------------------------
-   LAYER 2 — REAL ad script test
------------------------------------------------------------------- */
-// This URL is ALWAYS blocked by AdBlock:
-const REAL_AD_SCRIPT = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js";
-
-function fakeScriptTest() {
+/* ----------------------------------------------------------
+   LAYER 2 — CSS bait check
+---------------------------------------------------------- */
+function cssBaitCheck() {
   return new Promise(resolve => {
-    const script = document.createElement("script");
-    script.src = REAL_AD_SCRIPT;
-    script.onerror = () => resolve(true);   // Blocked
-    script.onload  = () => resolve(false);  // Allowed (rare)
-    document.body.appendChild(script);
-  });
-}
-
-/* ------------------------------------------------------------------
-   LAYER 3 — REAL ad network fetch test
------------------------------------------------------------------- */
-const REAL_AD_URL = "https://securepubads.g.doubleclick.net/tag/js/gpt.js";
-
-function networkTrapTest() {
-  return fetch(REAL_AD_URL, { method: "HEAD", mode: "no-cors" })
-    .then(() => false)
-    .catch(() => true);  // Blocked
-}
-
-/* ------------------------------------------------------------------
-   LAYER 4 — CSS rule inspection
------------------------------------------------------------------- */
-function cssRuleTest() {
-  return new Promise(resolve => {
-    let test = document.createElement("div");
-    test.innerHTML = "&nbsp;";
-    test.className = "adsbox";
-    document.body.appendChild(test);
+    const bait = document.createElement("div");
+    bait.className = "adsbox";
+    bait.style.height = "20px";
+    document.body.appendChild(bait);
 
     setTimeout(() => {
-      const blocked = test.offsetHeight == 0;
-      test.remove();
+      const blocked = bait.offsetHeight === 0;
+      bait.remove();
       resolve(blocked);
     }, 100);
   });
 }
 
-/* ------------------------------------------------------------------
-   LAYER 5 — REAL ad iframe test
------------------------------------------------------------------- */
-const REAL_AD_IFRAME = "https://googleads.g.doubleclick.net/";
-
-function iframeTrapTest() {
+/* ----------------------------------------------------------
+   LAYER 3 — Local fake ad script test (no CORS, NO false detect)
+---------------------------------------------------------- */
+function scriptBaitCheck() {
   return new Promise(resolve => {
-    let frame = document.createElement("iframe");
-    frame.src = REAL_AD_IFRAME;
-    frame.style.width = "1px";
-    frame.style.height = "1px";
-    frame.style.position = "absolute";
-    frame.style.left = "-9999px";
-
-    frame.onload = () => resolve(false); // Loaded (not blocked)
-    frame.onerror = () => resolve(true); // Blocked
-
-    document.body.appendChild(frame);
+    const script = document.createElement("script");
+    script.src = "./ads.js";   // fake local ad script
+    script.onload  = () => resolve(false); // loaded (no blocker)
+    script.onerror = () => resolve(true);  // blocked (adblocker)
+    document.body.appendChild(script);
   });
 }
 
-/* ------------------------------------------------------------------
-   RUN ALL TESTS + DECISION
------------------------------------------------------------------- */
+/* ----------------------------------------------------------
+   MASTER DETECTOR
+---------------------------------------------------------- */
 async function detectAdBlock() {
-  const results = await Promise.all([
+  const checks = await Promise.all([
     baitElementCheck(),
-    fakeScriptTest(),
-    networkTrapTest(),
-    cssRuleTest(),
-    iframeTrapTest()
+    cssBaitCheck(),
+    scriptBaitCheck()
   ]);
 
-  const triggers = results.filter(x => x === true).length;
-
-  // Strict mode: ANY detection = blocked
-  return triggers > 0;
+  return checks.includes(true);
 }
 
-/* ------------------------------------------------------------------
-   MAIN START
------------------------------------------------------------------- */
+/* ----------------------------------------------------------
+   MAIN LOGIC
+---------------------------------------------------------- */
 detectAdBlock().then(isBlocked => {
 
   if (isBlocked) {
     document.getElementById("loader").style.display = "none";
     document.getElementById("status").innerText = "AdBlock Detected!";
     document.getElementById("adblock-warning").style.display = "block";
-    return; // STOP EVERYTHING
+    return;
   }
 
   startLoader();
 });
 
-/* ------------------------------------------------------------------
-   Normal content loading
------------------------------------------------------------------- */
+/* ----------------------------------------------------------
+   LOAD URL FROM links.txt IF NO ADBLOCK
+---------------------------------------------------------- */
 function startLoader() {
   const params = new URLSearchParams(window.location.search);
   const id = params.get("id");
