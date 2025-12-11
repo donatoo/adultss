@@ -2,75 +2,106 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Dynamic Iframe Loader</title>
+  <title>Cinematic Viewer</title>
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f8f8f8;
-      padding: 20px;
-      text-align: center;
+      margin: 0;
+      background: radial-gradient(circle at top, #202533, #0d0f16);
+      font-family: "Poppins", Arial, sans-serif;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      overflow-x: hidden;
+      padding-top: 30px;
+    }
+
+    h2#status {
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+      text-shadow: 0 0 8px rgba(255,255,255,0.2);
+    }
+
+    /* Glass container */
+    #viewer-container {
+      width: 90%;
+      max-width: 1200px;
+      height: 75vh;
+      padding: 12px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 35px rgba(0,0,0,0.5);
+      display: none;
+      opacity: 0;
+      transition: opacity .7s ease;
     }
 
     iframe {
       width: 100%;
-      height: 80vh;
+      height: 100%;
       border: none;
-      display: none;
+      border-radius: 15px;
     }
 
-    /* Loading animation */
+    /* Cinematic loader ring */
     .loader {
-      margin: 40px auto;
-      width: 60px;
-      height: 60px;
+      width: 70px;
+      height: 70px;
       border-radius: 50%;
-      background: #3498db;
-      animation: pulse 1s infinite ease-in-out;
+      border: 6px solid rgba(255, 255, 255, 0.15);
+      border-top-color: #00e5ff;
+      animation: spin 1s infinite linear;
+      margin-top: 40px;
     }
 
-    @keyframes pulse {
-      0% { transform: scale(0.8); opacity: 0.6; }
-      50% { transform: scale(1); opacity: 1; }
-      100% { transform: scale(0.8); opacity: 0.6; }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
-    /* Adblock message */
+    /* AdBlock message */
     #adblock-warning {
       display: none;
-      padding: 20px;
-      border-radius: 10px;
-      background: #ff4444;
+      padding: 25px;
+      margin-top: 30px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, #ff4747, #ff2f2f);
       color: white;
       font-size: 20px;
       font-weight: bold;
+      box-shadow: 0 0 25px rgba(255,0,0,0.5);
+      width: 90%;
+      max-width: 600px;
     }
   </style>
 </head>
 <body>
 
-<h2 id="status">Loading content…</h2>
+<h2 id="status">🎬 Loading your movie…</h2>
 
 <div id="loader" class="loader"></div>
 
 <div id="adblock-warning">
   ⚠️ AdBlock detected!<br>
-  Please disable your AdBlocker and refresh the page.
+  Please disable it to watch this content.
 </div>
 
-<iframe id="viewer"></iframe>
+<div id="viewer-container">
+  <iframe id="viewer"></iframe>
+</div>
 
 <script>
 // ============================================================
-// ULTRA ACCURATE ADBLOCK DETECTOR (NO FALSE POSITIVES)
-// Uses 3 detection layers:
-// 1. CSS bait block
-// 2. Script filter block (Google Ads)
-// 3. Real ad request block (DoubleClick GPT)
+// ULTRA ACCURATE ADBLOCK DETECTOR (3 layers)
 // ============================================================
 
 async function accurateAdblockDetector() {
-  // Test 1: CSS bait
   let bait = document.createElement("div");
   bait.className = "adsbox ad-banner ad-unit advertisement";
   bait.style.position = "absolute";
@@ -85,56 +116,38 @@ async function accurateAdblockDetector() {
     bait.offsetHeight === 0 ||
     getComputedStyle(bait).display === "none" ||
     bait.offsetParent === null
-  ) {
-    cssBlocked = true;
-  }
+  ) cssBlocked = true;
 
   bait.remove();
 
-
-  // Test 2: Script-block check (real Google Ads JS)
   let scriptBlocked = false;
   try {
-    await fetch("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", {
-      method: "HEAD",
-      mode: "no-cors"
-    });
-  } catch (e) {
-    scriptBlocked = true;
-  }
+    await fetch(
+      "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js",
+      { method: "HEAD", mode: "no-cors" }
+    );
+  } catch (e) { scriptBlocked = true; }
 
-
-  // Test 3: Real ad request block (DoubleClick GPT)
   let networkBlocked = false;
   try {
-    await fetch("https://securepubads.g.doubleclick.net/tag/js/gpt.js", {
-      method: "HEAD",
-      mode: "no-cors"
-    });
-  } catch (e) {
-    networkBlocked = true;
-  }
+    await fetch(
+      "https://securepubads.g.doubleclick.net/tag/js/gpt.js",
+      { method: "HEAD", mode: "no-cors" }
+    );
+  } catch (e) { networkBlocked = true; }
 
-  // Only TRUE if all 3 systems fail
   return (cssBlocked && scriptBlocked && networkBlocked);
 }
 
-// ============================================================
-// Start detection before loading anything
-// ============================================================
-
 accurateAdblockDetector().then(isBlocked => {
-
   if (isBlocked) {
     document.getElementById("loader").style.display = "none";
     document.getElementById("status").innerText = "AdBlock Detected!";
     document.getElementById("adblock-warning").style.display = "block";
-    return; // STOP PAGE LOADING
+    return;
   }
-
   startLoadingProcess();
 });
-
 
 // ============================================================
 // Main loader function
@@ -145,18 +158,15 @@ function startLoadingProcess() {
   const id = params.get("id");
 
   if (!id) {
-    document.getElementById("status").innerText = "Error: No ID provided in URL.";
+    document.getElementById("status").innerText = "❌ Error: No ID provided.";
     return;
   }
 
   loadURLFromText(id);
 }
 
-
 // ============================================================
-// Load URL from links.txt
-// Format inside links.txt:
-// abc123=https://example.com/video
+// Load URL from Cloudflare Worker
 // ============================================================
 
 function loadURLFromText(id) {
@@ -164,17 +174,21 @@ function loadURLFromText(id) {
     .then(r => r.text())
     .then(foundURL => {
       if (foundURL === "Not found") {
-        document.getElementById("status").innerText = "No URL found.";
+        document.getElementById("status").innerText = "❌ No URL found.";
         document.getElementById("loader").style.display = "none";
         return;
       }
 
       const iframe = document.getElementById("viewer");
+      const container = document.getElementById("viewer-container");
+
       iframe.onload = () => {
         document.getElementById("loader").style.display = "none";
-        iframe.style.display = "block";
-        document.getElementById("status").innerText = "Loaded:";
+        container.style.display = "block";
+        setTimeout(() => container.style.opacity = "1", 50);
+        document.getElementById("status").innerText = "🎬 Now Playing:";
       };
+
       iframe.src = foundURL.trim();
     })
     .catch(err => {
@@ -182,7 +196,6 @@ function loadURLFromText(id) {
       document.getElementById("loader").style.display = "none";
     });
 }
-
 </script>
 
 </body>
