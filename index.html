@@ -11,12 +11,6 @@
 </script>
 
   <style>
-
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
     
 /* Prevent all scrolling */
 html, body {
@@ -84,7 +78,22 @@ iframe {
   box-shadow: 0 0 20px rgba(255,0,0,0.5);
 }
 
-    
+     /* Cinematic loader ring */
+    .loader {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: 6px solid rgba(255, 255, 255, 0.15);
+      border-top-color: #00e5ff;
+      animation: spin 1s infinite linear;
+      margin-top: 40px;
+    }
+
+
+      @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
  
   </style>
 </head>
