@@ -2,7 +2,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    if (url.pathname === "/api/get") {
+    if (url.pathname === "/get") {
       const id = url.searchParams.get("id");
       if (!id) {
         return new Response("Missing ID", { status: 400 });
