@@ -160,7 +160,7 @@ function startLoadingProcess() {
 // ============================================================
 
 function loadURLFromText(id) {
-  fetch("functions/api/get?id=" + id)
+  fetch("/get?id=" + id)
     .then(r => r.text())
     .then(foundURL => {
       if (foundURL === "Not found") {
