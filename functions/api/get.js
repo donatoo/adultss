@@ -9,7 +9,7 @@ export default {
       }
 
       // Load private links.txt from Pages assets
-      const file = await env.ASSETS.fetch("links.txt");
+      const file = await env.ASSETS.fetch("https://adultss.pages.dev/links.txt");
 
       const text = await file.text();
       const lines = text.split("\n");
