@@ -160,43 +160,29 @@ function startLoadingProcess() {
 // ============================================================
 
 function loadURLFromText(id) {
-  
-   fetch("links.txt")
-    .then(response => response.text())
-    .then(text => {
-      const lines = text.split("\n");
-      let foundURL = null;
-
-      for (let line of lines) {
-        line = line.trim();
-        if (line.startsWith(id + "=")) {
-          foundURL = line.split("=")[1].trim();
-          break;
-        }
-      }
-
-  
-      if (!foundURL) {
-        document.getElementById("status").innerText = "No URL found for ID: " + id;
+  fetch("/api/get?id=" + id)
+    .then(r => r.text())
+    .then(foundURL => {
+      if (foundURL === "Not found") {
+        document.getElementById("status").innerText = "No URL found.";
         document.getElementById("loader").style.display = "none";
         return;
       }
 
       const iframe = document.getElementById("viewer");
-
       iframe.onload = () => {
         document.getElementById("loader").style.display = "none";
         iframe.style.display = "block";
         document.getElementById("status").innerText = "Loaded:";
       };
-
-      iframe.src = foundURL;
+      iframe.src = foundURL.trim();
     })
     .catch(err => {
       document.getElementById("status").innerText = "Error: " + err;
       document.getElementById("loader").style.display = "none";
     });
 }
+
 </script>
 
 </body>
